@@ -66,10 +66,10 @@ React is a JavaScript library for building user interfaces. It is maintained by 
 </p>
 
 <p align="center">
-    <a href="https://github.com/username" target="_blank">
+    <a href="[https://github.com/username](https://github.com/MRA-goosebumps)" target="_blank">
         <img src="https://img.shields.io/badge/GitHub-181717.svg?&style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
     </a>
-    <a href="https://www.linkedin.com/in/username/" target="_blank">
+    <a href="[https://www.linkedin.com/in/username/](https://www.linkedin.com/in/muhammadrezaanggawirya/)" target="_blank">
         <img src="https://img.shields.io/badge/LinkedIn-0A66C2.svg?&style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
     </a>
 </p>
