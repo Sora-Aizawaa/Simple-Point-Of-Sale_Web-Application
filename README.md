@@ -37,6 +37,8 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+
+
 <p align="center">
     <a href="https://reactjs.org" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="100" alt="React Logo">
@@ -57,12 +59,8 @@ React is a JavaScript library for building user interfaces. It is maintained by 
 ## Created By
 
 <p align="center">
-    <img src="https://via.placeholder.com/150" alt="Profile Picture" width="150" height="150">
-</p>
-
-<p align="center">
     <strong>Muhammad Reza Anggawirya</strong><br>
-    Full-stack Developer
+     Web Developer
 </p>
 
 <p align="center">
