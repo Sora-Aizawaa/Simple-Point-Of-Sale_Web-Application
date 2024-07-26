@@ -319,7 +319,7 @@ export default function DaftarItem({ auth, items }) {
             )}
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-1">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6 text-gray-900">
                             <div className="overflow-x-auto">
@@ -414,7 +414,7 @@ export default function DaftarItem({ auth, items }) {
                                         {filteredItems.map((item, index) => (
                                             <tr key={item.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                    {index + 1}
+                                                    {index + 1}.
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     <Barcode
