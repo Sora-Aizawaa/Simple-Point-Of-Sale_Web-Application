@@ -78,23 +78,51 @@ export default function DaftarItem({ auth, items }) {
         image: null,
     });
 
-    const handleEdit = (index) => {
-        const itemToEdit = items[index];
-        setData({
-            kode_item: itemToEdit.kode_item,
-            nama_item: itemToEdit.nama_item,
-            stok: itemToEdit.stok,
-            satuan: itemToEdit.satuan,
-            jenis: itemToEdit.jenis,
-            merk: itemToEdit.merk,
-            harga: itemToEdit.harga,
-            image: null,
-        });
+    // const handleEdit = (index) => {
+    //     const itemToEdit = items[index];
+    //     setData({
+    //         kode_item: itemToEdit.kode_item,
+    //         nama_item: itemToEdit.nama_item,
+    //         stok: itemToEdit.stok,
+    //         satuan: itemToEdit.satuan,
+    //         jenis: itemToEdit.jenis,
+    //         merk: itemToEdit.merk,
+    //         harga: itemToEdit.harga,
+    //         image: null,
+    //     });
 
-        setPreviewImage(itemToEdit.image);
-        setEditIndex(index);
+    //     setPreviewImage(itemToEdit.image);
+    //     setEditIndex(index);
 
-        setShowEditModal(true);
+    //     setShowEditModal(true);
+    // };
+
+    const handleEdit = (id) => {
+        console.log("ID to edit:", id);
+        console.log("Items:", items);
+
+        const itemToEdit = items.find((item) => item.id === id); // Cari item berdasarkan ID
+        if (itemToEdit) {
+            console.log("Item Found:", itemToEdit);
+
+            setData({
+                kode_item: itemToEdit.kode_item,
+                nama_item: itemToEdit.nama_item,
+                stok: itemToEdit.stok,
+                satuan: itemToEdit.satuan,
+                jenis: itemToEdit.jenis,
+                merk: itemToEdit.merk,
+                harga: itemToEdit.harga,
+                image: null,
+            });
+
+            setPreviewImage(itemToEdit.image);
+            setEditIndex(id); // Simpan ID sebagai edit index
+
+            setShowEditModal(true);
+        } else {
+            console.error("Item with the specified ID not found");
+        }
     };
 
     const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -125,6 +153,49 @@ export default function DaftarItem({ auth, items }) {
     };
 
     // EDIT DATA
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+
+    //     const formData = new FormData();
+    //     formData.append("_method", "PATCH"); // Gunakan PATCH method untuk update
+    //     formData.append("kode_item", data.kode_item);
+    //     formData.append("nama_item", data.nama_item);
+    //     formData.append("stok", data.stok);
+    //     formData.append("satuan", data.satuan);
+    //     formData.append("jenis", data.jenis);
+    //     formData.append("merk", data.merk);
+    //     formData.append("harga", data.harga);
+
+    //     // Append image only if it's not null
+    //     if (data.image instanceof File) {
+    //         formData.append("image", data.image);
+    //     } else if (data.image === null) {
+    //         formData.append("image", ""); // Clear image if no new file is selected
+    //     }
+
+    //     try {
+    //         console.log("Submitting form for item ID:", editIndex);
+    //         // Use await to ensure the promise resolves before continuing
+    //         await router.post(`/daftar-item/${items[editIndex].id}`, formData, {
+    //             onSuccess: () => {
+    //                 setShowEditModal(false);
+    //                 reset();
+    //                 setPreviewImage(null);
+
+    //                 setTimeout(() => {
+    //                     alert("Data Berhasil Diupdate!");
+    //                     router.visit("/daftar-item");
+    //                 }, 2000); // 2 seconds delay for user to see the message
+    //             },
+    //             onError: (errors) => {
+    //                 console.error("Error updating item:", errors);
+    //             },
+    //         });
+    //     } catch (error) {
+    //         console.error("Error updating item:", error);
+    //     }
+    // };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -146,8 +217,9 @@ export default function DaftarItem({ auth, items }) {
         }
 
         try {
+            console.log("Submitting form for item ID:", editIndex);
             // Use await to ensure the promise resolves before continuing
-            await router.post(`/daftar-item/${items[editIndex].id}`, formData, {
+            await router.post(`/daftar-item/${editIndex}`, formData, {
                 onSuccess: () => {
                     setShowEditModal(false);
                     reset();
@@ -340,7 +412,7 @@ export default function DaftarItem({ auth, items }) {
 
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {filteredItems.map((item, index) => (
-                                            <tr key={index}>
+                                            <tr key={item.id}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {index + 1}
                                                 </td>
@@ -387,7 +459,7 @@ export default function DaftarItem({ auth, items }) {
                                                     <button
                                                         className="text-blue-600 hover:text-blue-900 mr-2"
                                                         onClick={() =>
-                                                            handleEdit(index)
+                                                            handleEdit(item.id)
                                                         }
                                                     >
                                                         Edit
