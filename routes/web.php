@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\MasterData\DaftarItemController ;
+use App\Http\Controllers\MasterData\DataPembeliController;
 use App\Http\Controllers\MasterData\KasirController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -35,17 +37,22 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/data-admin', [RegisteredUserController::class, 'dashboard'])->name('data-admin.dashboard');
+    Route::delete('/admin/{id}', [RegisteredUserController::class, 'destroy'])->name('admin.destroy');
+    
     Route::get('/daftar-item', [DaftarItemController::class, 'index'])->name('daftaritem.index');
     Route::post('/daftar-item', [DaftarItemController::class, 'store'])->name('daftaritem.store');
 
     // Route::get('/daftar-item/{id}', [DaftarItemController::class, 'update'])->name('daftaritem.update');
     Route::patch('/daftar-item/{id}', [DaftarItemController::class, 'update'])->name('daftaritem.update');
     Route::delete('/daftar-item/{id}', [DaftarItemController::class, 'destroy'])->name('daftaritem.destroy');
+
+    Route::get('/data-pembeli', [DataPembeliController::class, 'index'])->name('data-pembeli.index');
 
 
 

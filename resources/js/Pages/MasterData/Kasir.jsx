@@ -1,80 +1,83 @@
-import React, { useState } from "react";
+import { React, useState, useEffect } from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import Nav from "@/Layouts/Nav";
 
-export default function Kasir({ auth }) {
-    const [items, setItems] = useState([
-        { id: 1, nama: "Buku Tulis", harga: 5000, jumlah: 1 },
-        { id: 2, nama: "Pensil", harga: 2000, jumlah: 3 },
-        { id: 3, nama: "Penghapus", harga: 3000, jumlah: 2 },
-    ]);
+export default function Kasir({ auth, items }) {
+    const [itemsState, setItemsState] = useState([]);
+    const [discount, setDiscount] = useState(0);
+    const [cart, setCart] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const [showModal, setShowModal] = useState(false);
-    const [paidAmount, setPaidAmount] = useState(0); // State untuk menyimpan jumlah uang yang dibayar
-    const [showWeightModal, setShowWeightModal] = useState(false); // State untuk menampilkan modal kalkulator timbangan
-    const [weightInput, setWeightInput] = useState(""); // State untuk input berat
-    const [calculatedPrice, setCalculatedPrice] = useState(0); // State untuk hasil perhitungan harga berdasarkan berat
-    const [additionalPrice, setAdditionalPrice] = useState(0);
-
-    const openModal = () => {
-        setShowModal(true);
-    };
-
-    const closeModal = () => {
-        setShowModal(false);
-    };
-
-    const openWeightModal = () => {
-        setShowWeightModal(true);
-    };
-
-    const closeWeightModal = () => {
-        setShowWeightModal(false);
-    };
-
-    const calculateTotal = () => {
-        let total = 0;
-        items.forEach((item) => {
-            total += item.harga * item.jumlah;
-        });
-        return total;
-    };
-
-    const handlePayment = () => {
-        // Implementasi logika pembayaran di sini
-        const total = calculateTotal();
-        if (paidAmount >= total) {
-            const change = paidAmount - total;
-            alert(`Pembayaran berhasil dilakukan! Uang kembalian: ${change}`);
-            // Reset state atau navigasi ke halaman berikutnya
+    useEffect(() => {
+        if (Array.isArray(items)) {
+            setItemsState(items);
         } else {
-            alert("Jumlah uang yang dibayarkan kurang dari total belanja.");
-            // Atur ulang state atau lakukan tindakan lain sesuai kebutuhan
+            console.error("Invalid items prop:", items);
         }
+    }, [items]);
+
+    // Debugging: Log itemsState to ensure it's an array
+    console.log("Items State:", itemsState);
+
+    // CART
+
+    const addToCart = (item) => {
+        setCart((prevCart) => {
+            const existingItem = prevCart.find(
+                (cartItem) => cartItem.kode_item === item.kode_item
+            );
+            if (existingItem) {
+                // If item is already in cart, update quantity
+                return prevCart.map((cartItem) =>
+                    cartItem.kode_item === item.kode_item
+                        ? { ...cartItem, qty: cartItem.qty + 1 }
+                        : cartItem
+                );
+            }
+            // If item is not in cart, add it
+            return [...prevCart, { ...item, qty: 1 }];
+        });
     };
 
-    const removeItem = (id) => {
-        const updatedItems = items.filter((item) => item.id !== id);
-        setItems(updatedItems);
+    const incrementQuantity = (kode_item) => {
+        setCart((prevCart) =>
+            prevCart.map((cartItem) =>
+                cartItem.kode_item === kode_item
+                    ? { ...cartItem, qty: cartItem.qty + 1 }
+                    : cartItem
+            )
+        );
     };
 
-    const formatNumber = (number) => {
-        return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    const decrementQuantity = (kode_item) => {
+        setCart((prevCart) =>
+            prevCart.map((cartItem) =>
+                cartItem.kode_item === kode_item
+                    ? { ...cartItem, qty: Math.max(cartItem.qty - 1, 1) } // Ensure qty does not go below 1
+                    : cartItem
+            )
+        );
     };
 
-    const handleWeightChange = (e) => {
-        const { value } = e.target;
-        setWeightInput(value);
+    const subtotal = cart.reduce((acc, item) => acc + item.harga * item.qty, 0);
+    const tax = 0; // Example tax value
+    const totalBeforeDiscount = subtotal + tax;
+    const total = totalBeforeDiscount - discount;
 
-        // Hitung harga berdasarkan berat
-        const pricePerKg = 15000; // Misal harga per kg
-        const weightInKg = parseFloat(value) / 1000; // Konversi gram ke kg
-        const totalPrice = pricePerKg * weightInKg;
-        setCalculatedPrice(totalPrice);
+    const formatPrice = (price) => {
+        const priceNumber = parseFloat(price);
+        return priceNumber % 1 === 0
+            ? `Rp.${priceNumber.toLocaleString()}`
+            : `Rp.${priceNumber.toFixed(2).replace(/\.00$/, "")}`;
+    };
 
-        // Menambahkan hasil kalkulator timbangan ke total
-        setAdditionalPrice(totalPrice); // Pastikan Anda memiliki state untuk menyimpan harga tambahan
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
     };
 
     return (
@@ -82,311 +85,300 @@ export default function Kasir({ auth }) {
             <Head title="Halaman Kasir" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            <div className="overflow-x-auto">
-                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-                                    <h2 className="text-lg font-semibold mb-5">
-                                        Kasir
-                                    </h2>
-                                    <div className="flex">
-                                        <button
-                                            onClick={openModal}
-                                            className="px-4 py-2 bg-blue-600 text-white rounded-lg mr-2"
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-1 flex">
+                    <div className="flex-1 bg-white shadow-lg rounded-lg overflow-hidden mb-8 mr-4">
+                        <div className="p-6 text-black">
+                            <div className="flex justify-end items-center space-x-2 mb-5">
+                                <input
+                                    type="text"
+                                    className="px-4 py-2 border rounded-lg"
+                                    placeholder="Cari Kode/Nama"
+                                    // value={searchTerm}
+                                    // onChange={handleSearchChange}
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {itemsState.length > 0 ? (
+                                    itemsState.map((item) => (
+                                        <div
+                                            key={item.kode_item}
+                                            className="border rounded-lg overflow-hidden"
                                         >
-                                            Bayar Online
-                                        </button>
-                                        <button
-                                            onClick={openWeightModal}
-                                            className="px-4 py-2 bg-green-600 text-white rounded-lg"
-                                        >
-                                            Kalkulator Timbangan
-                                        </button>
-                                    </div>
-                                </div>
-                                <table className="min-w-full bg-white mt-4">
-                                    <thead>
-                                        <tr>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                No
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Nama Barang
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Harga Satuan
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Jumlah
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Subtotal
-                                            </th>
-                                            <th className="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                                Aksi
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {items.map((item, index) => (
-                                            <tr key={item.id}>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {index + 1}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {item.nama}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {formatNumber(item.harga)}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {item.jumlah}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {formatNumber(
-                                                        item.harga * item.jumlah
-                                                    )}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
+                                            {item.image && (
+                                                <img
+                                                    src={item.image}
+                                                    alt={item.nama_item}
+                                                    className="w-full h-48 object-cover"
+                                                />
+                                            )}
+                                            <div className="p-4">
+                                                <h1 className="text-lg font-bold">
+                                                    {item.nama_item}
+                                                </h1>
+                                                <p className="text-xl text-red-500 mb-2">
+                                                    {formatPrice(item.harga)}
+                                                </p>
+                                                <p className="text-sm text-gray-700">
+                                                    Stok: {item.stok}{" "}
+                                                    {item.satuan}
+                                                </p>
+                                                <p className="text-sm text-gray-700">
+                                                    Jenis: {item.jenis}
+                                                </p>
+                                                <p className="text-sm text-gray-700">
+                                                    Merk: {item.merk}
+                                                </p>
+                                                <p className="text-sm text-gray-700">
+                                                    Kode: {item.kode_item}
+                                                </p>
+                                                <div className="flex justify-between mt-4">
                                                     <button
                                                         onClick={() =>
-                                                            removeItem(item.id)
+                                                            addToCart(item)
                                                         }
-                                                        className="text-red-600"
+                                                        className="flex-1 bg-blue-500 text-white rounded-full px-4 py-2 mx-1"
                                                     >
-                                                        Hapus
+                                                        Cart
                                                     </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        <tr>
-                                            <td
-                                                colSpan="4"
-                                                className="text-right font-semibold"
-                                            >
-                                                Total
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 font-semibold">
-                                                {formatNumber(
-                                                    calculateTotal() +
-                                                        additionalPrice
-                                                )}
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                colSpan="4"
-                                                className="text-right font-semibold"
-                                            >
-                                                Uang yang Dibayarkan
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <input
-                                                    type="number"
-                                                    className="border border-gray-300 rounded-md px-3 py-1"
-                                                    value={paidAmount}
-                                                    onChange={(e) =>
-                                                        setPaidAmount(
-                                                            parseInt(
-                                                                e.target.value
-                                                            )
-                                                        )
-                                                    }
-                                                />
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td
-                                                colSpan="4"
-                                                className="text-right font-semibold"
-                                            >
-                                                Uang Kembalian
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 font-semibold">
-                                                {paidAmount >= calculateTotal()
-                                                    ? formatNumber(
-                                                          paidAmount -
-                                                              calculateTotal()
-                                                      )
-                                                    : "Masukkan jumlah yang cukup"}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                <button
-                                                    // onClick={handleSave}
-                                                    className="px-4 py-2 bg-green-600 text-white rounded-lg"
-                                                >
-                                                    Simpan Transaksi
-                                                </button>
-                                            </td>
-                                        </tr>
-
-                                        {/* Tampilkan hasil kalkulator timbangan */}
-                                        {showWeightModal && (
-                                            <div className="fixed z-10 inset-0 overflow-y-auto">
-                                                <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                                                    <div className="fixed inset-0 transition-opacity">
-                                                        <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                                                    </div>
-
-                                                    <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
-                                                        &#8203;
-                                                    </span>
-
-                                                    <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                                                        <div>
-                                                            <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                                                Kalkulator
-                                                                Timbangan
-                                                            </h3>
-                                                            {/* Isi kalkulator timbangan */}
-                                                            <div className="mt-4">
-                                                                <input
-                                                                    type="number"
-                                                                    className="border border-gray-300 rounded-md px-3 py-1 mr-2 mb-4"
-                                                                    placeholder="Masukkan berat (gram)"
-                                                                    value={
-                                                                        weightInput
-                                                                    }
-                                                                    onChange={
-                                                                        handleWeightChange
-                                                                    }
-                                                                />
-                                                                <span className="text-gray-600">
-                                                                    Misal: 200
-                                                                    gram
-                                                                </span>
-                                                                <input
-                                                                    type="number"
-                                                                    className="border border-gray-300 rounded-md px-3 py-1 mr-2"
-                                                                    placeholder="Masukkan berat (gram)"
-                                                                    value={
-                                                                        weightInput
-                                                                    }
-                                                                    onChange={
-                                                                        handleWeightChange
-                                                                    }
-                                                                />
-                                                            </div>
-                                                            <table className="min-w-full bg-white mt-4">
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 font-semibold">
-                                                                            Total
-                                                                            Berat
-                                                                        </td>
-                                                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                                            {
-                                                                                weightInput
-                                                                            }{" "}
-                                                                            gram
-                                                                        </td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 font-semibold">
-                                                                            Harga
-                                                                            Berdasarkan
-                                                                            Berat
-                                                                        </td>
-                                                                        <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                                            {formatNumber(
-                                                                                calculatedPrice
-                                                                            )}
-                                                                        </td>
-                                                                    </tr>
-                                                                </tbody>
-                                                            </table>
-                                                            {/* Tombol untuk menutup modal kalkulator timbangan */}
-                                                            <div className="mt-4 flex items-center">
-                                                                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg mr-2">
-                                                                    Simpan
-                                                                </button>
-                                                                <button
-                                                                    onClick={
-                                                                        closeWeightModal
-                                                                    }
-                                                                    className="px-4 py-2 bg-gray-600 text-white rounded-lg"
-                                                                >
-                                                                    Batal
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
                                             </div>
-                                        )}
-                                    </tbody>
-                                </table>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-700">
+                                        No items available
+                                    </p>
+                                )}
                             </div>
+                        </div>
+                    </div>
+                    <div className="w-1/3 bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+                        <div className="p-6 text-black">
+                            <h2 className="text-xl font-bold mb-4">
+                                Current Order
+                            </h2>
+                            {cart.length > 0 ? (
+                                cart.map((order) => (
+                                    <div
+                                        key={order.kode_item}
+                                        className="flex items-center mb-4"
+                                    >
+                                        <img
+                                            src={order.image}
+                                            alt={order.nama_item}
+                                            className="w-16 h-16 object-cover rounded"
+                                        />
+                                        <div className="ml-4 flex-1">
+                                            <h3 className="text-lg">
+                                                {order.nama_item}
+                                            </h3>
+                                            <p className="text-gray-700">
+                                                {formatPrice(order.harga)} x{" "}
+                                                {order.qty}
+                                            </p>
+                                        </div>
+                                        <div className="ml-4">
+                                            <button
+                                                onClick={() =>
+                                                    decrementQuantity(
+                                                        order.kode_item
+                                                    )
+                                                }
+                                                className="bg-red-500 text-white rounded-full px-4 py-2"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="px-4">
+                                                {order.qty}
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    incrementQuantity(
+                                                        order.kode_item
+                                                    )
+                                                }
+                                                className="bg-green-500 text-white rounded-full px-4 py-2"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-700">Cart is empty</p>
+                            )}
+                            <div className="border-t pt-4 mt-4">
+                                <p className="text-gray-700">
+                                    Subtotal: {formatPrice(subtotal.toFixed(2))}
+                                </p>
+                                <p className="text-gray-700">
+                                    Discount: {formatPrice(discount.toFixed(2))}
+                                </p>
+                                <p className="text-gray-700">
+                                    Total sales tax:
+                                    {formatPrice(tax.toFixed(2))}
+                                </p>
+                                <div className="flex items-center mt-2 mb-4">
+                                    <label className="text-gray-700 mr-2">
+                                        Discount:
+                                    </label>
+                                    <input
+                                        type="number"
+                                        value={discount}
+                                        onChange={(e) =>
+                                            setDiscount(
+                                                parseFloat(e.target.value)
+                                            )
+                                        }
+                                        className="border rounded px-2 py-1"
+                                    />
+                                </div>
+                                <p className="text-xl font-bold mt-2">
+                                    Total: {formatPrice(total.toFixed(2))}
+                                </p>
+                            </div>
+                            <div className="flex justify-between mt-4">
+                                <button
+                                    className="flex-1 bg-green-500 text-white rounded-full px-4 py-2 mr-2"
+                                    onClick={handleOpenModal}
+                                >
+                                    Cash
+                                </button>
+                                <button className="flex-1 bg-orange-500 text-white rounded-full px-4 py-2 ml-2">
+                                    Payment
+                                </button>
+                            </div>
+
+                            {isModalOpen && (
+                                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                                    <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg mx-auto relative">
+                                        <button
+                                            onClick={handleCloseModal}
+                                            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                                        >
+                                            &times;
+                                        </button>
+                                        <h3 className="text-lg font-bold">
+                                            Invoice
+                                        </h3>
+                                        <div className="mt-4">
+                                            {itemsState.length > 0 ? (
+                                                <div>
+                                                    {itemsState.map((item) => (
+                                                        <div
+                                                            key={item.kode_item}
+                                                            className="flex items-center mb-4"
+                                                        >
+                                                            <img
+                                                                src={item.image}
+                                                                alt={
+                                                                    item.nama_item
+                                                                }
+                                                                className="w-16 h-16 object-cover rounded"
+                                                            />
+                                                            <div className="ml-4 flex-1">
+                                                                <h3 className="text-lg">
+                                                                    {
+                                                                        item.nama_item
+                                                                    }
+                                                                </h3>
+                                                                <p className="text-gray-700">
+                                                                    {item.harga}{" "}
+                                                                    x{" "}
+                                                                    {item.stok}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                    <div className="border-t pt-4 mt-4">
+                                                        <p className="text-gray-700">
+                                                            Subtotal:{" "}
+                                                            {subtotal.toFixed(
+                                                                2
+                                                            )}
+                                                        </p>
+                                                        <p className="text-gray-700">
+                                                            Discount:{" "}
+                                                            {discount.toFixed(
+                                                                2
+                                                            )}
+                                                        </p>
+                                                        <p className="text-gray-700">
+                                                            Total sales tax:{" "}
+                                                            {tax.toFixed(2)}
+                                                        </p>
+                                                        <p className="text-xl font-bold mt-2">
+                                                            Total:{" "}
+                                                            {total.toFixed(2)}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-700">
+                                                    No items available
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Modal Kasir */}
-            {showModal && (
-                <div className="fixed z-10 inset-0 overflow-y-auto">
-                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div className="fixed inset-0 transition-opacity">
-                            <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                        </div>
-
-                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
-                            &#8203;
-                        </span>
-
-                        <div className="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                            <div>
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                    Pembayaran
-                                </h3>
-                                {/* Tampilkan daftar item yang dibeli */}
-                                <table className="min-w-full bg-white">
-                                    <tbody>
-                                        {items.map((item, index) => (
-                                            <tr key={item.id}>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200">
-                                                    {item.nama}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-right">
-                                                    {formatNumber(
-                                                        item.harga * item.jumlah
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                        <tr>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 font-semibold">
-                                                Total
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-no-wrap border-b border-gray-200 text-right font-semibold">
-                                                {formatNumber(calculateTotal())}
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                {/* Tombol untuk menutup modal dan proses pembayaran */}
-                                <div className="mt-4">
-                                    <button
-                                        onClick={handlePayment}
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg mr-2"
-                                    >
-                                        Proses Pembayaran
-                                    </button>
-                                    <button
-                                        onClick={closeModal}
-                                        className="px-4 py-2 bg-gray-600 text-white rounded-lg"
-                                    >
-                                        Batal
-                                    </button>
+            {/* <div className="py-12">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div className="bg-white shadow-lg rounded-lg overflow-hidden mb-8">
+                        <div className="p-6 text-black">
+                            <div className="product-detail">
+                                <div className="relative">
+                                    <img
+                                        src="https://via.placeholder.com/300" 
+                                        alt="Product"
+                                        className="w-full h-auto"
+                                    />
+                                 
+                                </div>
+                                <div className="p-4">
+                                    <div className="flex space-x-2">
+                                        <span className="bg-red-500 text-white rounded-full px-2">
+                                            Recommended
+                                        </span>
+                                        <span className="bg-red-500 text-white rounded-full px-2">
+                                            Imported
+                                        </span>
+                                    </div>
+                                    <h1 className="text-lg font-bold mt-2">
+                                        Imported M6 Ribeye 450~500g
+                                    </h1>
+                                    <p className="text-xl text-red-500 mt-1">
+                                        ¥299
+                                    </p>
+                                    <p className="text-sm text-gray-700 mt-1">
+                                        The main component of Omega-3 fatty
+                                        acids in Australian beef is AL linolenic
+                                        acid, which is an essential fatty acid
+                                        for the human body and is beneficial to
+                                        health.
+                                    </p>
+                                    <div className="flex justify-between mt-4">
+                                        <button className="flex-1 bg-yellow-500 text-black rounded-full px-4 py-2 mx-1">
+                                            Shop
+                                        </button>
+                                        <button className="flex-1 bg-gray-300 text-black rounded-full px-4 py-2 mx-1">
+                                            Wishlist
+                                        </button>
+                                        <button className="flex-1 bg-red-500 text-white rounded-full px-4 py-2 mx-1">
+                                            Buy Now
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            )}
+            </div> */}
         </AuthenticatedLayout>
     );
 }
