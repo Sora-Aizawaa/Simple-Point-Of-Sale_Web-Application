@@ -39,8 +39,8 @@ export default function DaftarItem({ auth, items }) {
         setSearchTerm(value);
     };
 
-    const openDeleteModal = (id) => {
-        setItemToDelete(id);
+    const openDeleteModal = (id_barang) => {
+        setItemToDelete(id_barang);
         setShowDeleteModal(true);
     };
 
@@ -97,11 +97,11 @@ export default function DaftarItem({ auth, items }) {
     //     setShowEditModal(true);
     // };
 
-    const handleEdit = (id) => {
-        console.log("ID to edit:", id);
+    const handleEdit = (id_barang) => {
+        console.log("ID to edit:", id_barang);
         console.log("Items:", items);
 
-        const itemToEdit = items.find((item) => item.id === id); // Cari item berdasarkan ID
+        const itemToEdit = items.find((item) => item.id_barang === id_barang); // Cari item berdasarkan ID
         if (itemToEdit) {
             console.log("Item Found:", itemToEdit);
 
@@ -117,7 +117,7 @@ export default function DaftarItem({ auth, items }) {
             });
 
             setPreviewImage(itemToEdit.image);
-            setEditIndex(id); // Simpan ID sebagai edit index
+            setEditIndex(id_barang); // Simpan ID sebagai edit index
 
             setShowEditModal(true);
         } else {
@@ -295,7 +295,9 @@ export default function DaftarItem({ auth, items }) {
         setSelectedImage(null);
     };
 
-    const itemToDeleteData = items.find((item) => item.id === itemToDelete);
+    const itemToDeleteData = items.find(
+        (item) => item.id_barang === itemToDelete
+    );
 
     const [showPrintModal, setShowPrintModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -440,7 +442,7 @@ export default function DaftarItem({ auth, items }) {
 
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {filteredItems.map((item, index) => (
-                                            <tr key={item.id}>
+                                            <tr key={item.id_barang}>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                     {index + 1}.
                                                 </td>
@@ -504,7 +506,9 @@ export default function DaftarItem({ auth, items }) {
                                                     <button
                                                         className="text-blue-600 hover:text-blue-900 mr-2"
                                                         onClick={() =>
-                                                            handleEdit(item.id)
+                                                            handleEdit(
+                                                                item.id_barang
+                                                            )
                                                         }
                                                     >
                                                         Edit
@@ -512,7 +516,7 @@ export default function DaftarItem({ auth, items }) {
                                                     <button
                                                         onClick={() =>
                                                             openDeleteModal(
-                                                                item.id
+                                                                item.id_barang
                                                             )
                                                         }
                                                         className="text-red-600 hover:text-red-900"

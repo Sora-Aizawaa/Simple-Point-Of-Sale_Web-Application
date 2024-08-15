@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Controllers\MasterData\KasirController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -16,4 +18,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
+
+    // Route::post('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
 });
+
+// Route::post('/store', [KasirController::class, 'store'])->name('kasir.store');

@@ -54,11 +54,17 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/data-pembeli', [DataPembeliController::class, 'index'])->name('data-pembeli.index');
 
-
-
+    // TRANSAKSI 
     Route::get('/kasir', [KasirController::class, 'index'])->name('kasir.index');
+    Route::post('/store', [KasirController::class, 'store'])->name('kasir.store');
+    Route::post('/store2', [KasirController::class, 'store2'])->name('kasir.store2');
 
+    //CLIENT KEY
+    Route::get('/midtrans-config', [KasirController::class, 'getMidtransConfig']);
     
+    //SNAP TOKEN
+    // Route::get('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
+    Route::post('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
 });
 
 require __DIR__.'/auth.php';

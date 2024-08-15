@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('datapembelis', function (Blueprint $table) {
-            $table->id('id_pembeli');
+            $table->increments('id_pembeli');
             $table->string('nama');
             $table->text('alamat');
             $table->string('nomor_telepon');

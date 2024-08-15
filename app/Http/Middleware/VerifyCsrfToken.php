@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        'generate-snap-token', // Added route to be excluded from CSRF verification
     ];
 }
