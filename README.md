@@ -1,73 +1,61 @@
-<p align="center">
+# 📝 About the Project
+A Simple Point of Sale (POS) web application built using Laravel (backend) and ReactJS (frontend).
+
+This application is designed to:
+
+**💰 Handle simple sales calculation (total, discount, and change)**
+
+**🧾 Integrate with Midtrans Payment Gateway using QRIS for electronic payments**
+
+This lightweight web app is built for fast and easy checkout using both cash and QRIS-based digital payment, without complex item management or transaction history features.
+
+</br>
+
+<p align="left">
     <a href="https://laravel.com" target="_blank">
         <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo">
     </a>
 </p>
 
-<p align="center">
-    <a href="https://github.com/laravel/framework/actions">
-        <img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version">
-    </a>
-    <a href="https://packagist.org/packages/laravel/framework">
-        <img src="https://img.shields.io/packagist/l/laravel/framework" alt="License">
-    </a>
-</p>
+## 🔧 About Laravel
+Laravel is a PHP framework used to build web applications with elegant and expressive syntax.
+Key features of Laravel include:
 
-<p align="center">
-    <img src="https://img.shields.io/badge/Made%20with-Laravel%20%7C%20ReactJS-blue.svg" alt="Made with Laravel and ReactJS">
-</p>
+**🚦 Fast and simple routing**
 
-## About Laravel
+**🔐 Built-in authentication system**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**🗄️ Eloquent ORM for database interaction**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**🧱 Clean MVC architecture**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Learn more at: https://laravel.com
 
+</br>
 
-
-<p align="center">
+<p align="left">
     <a href="https://reactjs.org" target="_blank">
         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" width="100" alt="React Logo">
     </a>
 </p>
 
-## About ReactJS
+## ⚛️ About ReactJS
+React is a JavaScript library for building user interfaces (UI).
+It simplifies the creation of interactive UIs using a component-based approach.
 
-React is a JavaScript library for building user interfaces. It is maintained by Facebook and a community of individual developers and companies. React can be used as a base in the development of single-page or mobile applications.
+Official website: https://reactjs.org
 
-<p align="center">
-    <img src="https://img.shields.io/badge/Code-JavaScript-blue.svg" alt="JavaScript">
-    <img src="https://img.shields.io/badge/Code-PHP-777bb4.svg" alt="PHP">
-    <img src="https://img.shields.io/badge/Code-HTML-E34F26.svg" alt="HTML">
-    <img src="https://img.shields.io/badge/Code-CSS-1572B6.svg" alt="CSS">
-</p>
 
-## Created By
 
-<p align="center">
-    <strong>Muhammad Reza Anggawirya</strong><br>
-     Web Developer
-</p>
+## 🧑‍💻 Created By
+**Muhammad Reza Anggawirya - Junior Software Engineer**
 
-<p align="center">
-    <a href="https://github.com/MRA-goosebumps" target="_blank">
-        <img src="https://img.shields.io/badge/GitHub-181717.svg?&style=for-the-badge&logo=github&logoColor=white" alt="GitHub">
-    </a>
-    <a href="https://www.linkedin.com/in/muhammadrezaanggawirya/" target="_blank">
-        <img src="https://img.shields.io/badge/LinkedIn-0A66C2.svg?&style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
-    </a>
-</p>
+I'm a passionate web developer focusing on building modern web applications using Laravel and ReactJS. I enjoy creating efficient, clean, and user-friendly systems that help solve real-world problems.
+
+**Connect with me:**
+
+**GitHub: MRA-goosebumps**
+
+**LinkedIn: Muhammad Reza Anggawirya**
+
+
