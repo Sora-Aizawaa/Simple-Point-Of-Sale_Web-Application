@@ -22,4 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     // Route::post('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
 });
 
-// Route::post('/store', [KasirController::class, 'store'])->name('kasir.store');
+Route::post('/midtrans-callback', [KasirController::class, 'callback'])->name('midtrans.callback');

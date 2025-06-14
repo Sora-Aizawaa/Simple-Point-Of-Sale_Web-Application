@@ -45,6 +45,14 @@ export default function Nav({ user }) {
                                     Data Pembeli
                                 </Link>
                             </li>
+                            <li>
+                                <Link
+                                    href="/data-transaksi"
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                    Data Transaksi
+                                </Link>
+                            </li>
 
                             {/* Add more links as needed */}
                         </ul>

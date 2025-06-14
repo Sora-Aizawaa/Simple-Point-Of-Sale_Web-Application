@@ -30,6 +30,17 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                             </div>
+
+                            <div className="hidden space-x-8 sm:-my-px sm:ms-2 sm:flex">
+                                <NavLink
+                                    href={route("dashboarduser.index")}
+                                    active={route().current(
+                                        "dashboarduser.index"
+                                    )}
+                                >
+                                    Halaman User
+                                </NavLink>
+                            </div>
                         </div>
 
                         <div className="hidden sm:flex sm:items-center sm:ms-6">

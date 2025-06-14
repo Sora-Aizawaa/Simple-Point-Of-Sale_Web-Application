@@ -343,6 +343,7 @@ export default function Kasir({ auth, items, data_pembeli, onClose }) {
         // Data items dari cart
         const items = cart.map((item) => ({
             id_barang: item.id_barang,
+            kode_barang: item.kode_item,
             price: item.harga,
             quantity: item.qty,
             subtotal_per_unit: item.harga * item.qty,
@@ -368,7 +369,9 @@ export default function Kasir({ auth, items, data_pembeli, onClose }) {
             transaction_time: formattedDate,
             items: items,
             customer_details: customerDetails,
-            status_pembayaran: "Unpaid",
+            status_pembayaran: "Paid",
+            metode_pembayaran: "other",
+            nama_bank: "-",
         };
 
         console.log("Data to send:", dataToSend); // Debugging data
@@ -431,12 +434,15 @@ export default function Kasir({ auth, items, data_pembeli, onClose }) {
                                             className="border rounded-lg overflow-hidden"
                                         >
                                             {item.image && (
-                                                <img
-                                                    src={item.image}
-                                                    alt={item.nama_item}
-                                                    className="w-full h-48 object-cover"
-                                                />
+                                                <div className="w-full h-48 flex justify-center items-center bg-gray-100">
+                                                    <img
+                                                        src={item.image}
+                                                        alt={item.nama_item}
+                                                        className="max-w-full max-h-full object-contain"
+                                                    />
+                                                </div>
                                             )}
+
                                             <div className="p-4">
                                                 <h1 className="text-lg font-bold">
                                                     {item.nama_item}

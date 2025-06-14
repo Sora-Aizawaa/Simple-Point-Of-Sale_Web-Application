@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\HalamanUser\DashboardUser;
 use App\Http\Controllers\MasterData\DaftarItemController ;
 use App\Http\Controllers\MasterData\DataPembeliController;
 use App\Http\Controllers\MasterData\KasirController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -59,12 +61,23 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/store', [KasirController::class, 'store'])->name('kasir.store');
     Route::post('/store2', [KasirController::class, 'store2'])->name('kasir.store2');
 
+    //GET TRANSAKSI
+    Route::get('/data-transaksi', [KasirController::class, 'transaksi'])->name('data-transaksi.transaksi');
+
     //CLIENT KEY
     Route::get('/midtrans-config', [KasirController::class, 'getMidtransConfig']);
     
     //SNAP TOKEN
     // Route::get('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
     Route::post('/generate-snap-token', [KasirController::class, 'generateSnapToken'])->name('generate.snap.token');
+
+    // Midtrans After Payment
+    // Route::post('/midtrans-callback', [KasirController::class, 'callback'])->name('midtrans.callback');
+
+    //Halaman User
+    Route::get('/halaman-user', [DashboardUser::class, 'index'])->name('dashboarduser.index');
+
+   
 });
 
 require __DIR__.'/auth.php';

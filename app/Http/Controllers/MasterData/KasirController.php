@@ -29,6 +29,14 @@ class KasirController extends Controller
         ]);
     }
 
+    public function transaksi() {
+        
+        return Inertia::render('MasterData/DataTransaksi', [
+            'data_transaksi' => Kasir::with('pembeli')->get()
+            
+        ]);
+    }
+
     
     // PAYMENT
 
@@ -94,6 +102,7 @@ class KasirController extends Controller
         Kasir::create([
             'id_transaksi' => $validatedData['order_id'],
             'id_pembeli' => $pembeli->id_pembeli,
+            'order_id' => $validatedData['order_id'],
             'riwayat_transaksi' => json_encode($riwayatTransaksi),
             'subtotal_keseluruhan' => $validatedData['subtotal'],
             'potongan_harga' => $validatedData['discount'],
@@ -173,6 +182,7 @@ class KasirController extends Controller
         Kasir::create([
             'id_transaksi' => $validatedData['order_id'],
             'id_pembeli' => $pembeli->id_pembeli,
+            'order_id' => $validatedData['order_id'],
             'riwayat_transaksi' => json_encode($riwayatTransaksi),
             'subtotal_keseluruhan' => $validatedData['subtotal'],
             'potongan_harga' => $validatedData['discount'],
@@ -228,11 +238,89 @@ class KasirController extends Controller
                     'name' => $item['name']
                 ];
             }, $validatedData['items']),
+            'credit_card' => [
+                'secure' => true, // Enable 3DS for credit card transactions
+            ],
         ];
 
         $snapToken = \Midtrans\Snap::createTransaction($params)->token;
         return response()->json(['snapToken' => $snapToken]);
     }
+
+
+
+    public function callback(Request $request)
+    {
+        $serverKey = config('midtrans.server_key');
+        $hashed = hash("sha512", $request->order_id.$request->status_code.$request->gross_amount.$serverKey);
+
+        if ($hashed == $request->signature_key) {
+            // Cari transaksi berdasarkan order_id
+            $transaksi = Kasir::where('order_id', $request->order_id)->first();
+
+            if ($transaksi) {
+                // Mapping metode pembayaran dari Midtrans ke opsi enum di database
+            
+                
+                $metodePembayaranMapping = [
+                    'bank_transfer' => 'bank_transfer',
+                    'credit_card'   => 'credit_card',
+                    'gopay'         => 'gopay',
+                    'shopeepay'     => 'shopeepay',
+                    'qris'          => 'qris',
+                    // Tambahkan mapping lain jika diperlukan
+                ];
+
+                // Ambil metode pembayaran dari request
+                $metodePembayaran = $metodePembayaranMapping[$request->payment_type] ?? 'other';
+
+                // Ambil nama bank jika tersedia di va_numbers
+                $namaBank = null;
+                if ($request->payment_type == 'bank_transfer' && isset($request->va_numbers[0]['bank'])) {
+                    $namaBank = $request->va_numbers[0]['bank'];
+                }
+
+                if ($request->payment_type == 'credit_card' && isset($request->fraud_status) && $request->fraud_status == 'accept') {
+                    // Example of extracting bank name from credit card transactions
+                    // Note: Adjust this according to the actual response structure from Midtrans
+                    $namaBank = $request->credit_card['bank'] ?? 'Unknown';  
+                }
+
+            
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    // Jika transaksi berhasil, ubah status pembayaran menjadi "Paid"
+                    $transaksi->update([
+                        'status_pembayaran' => 'Paid',
+                        'nama_bank' => $namaBank,
+                        'metode_pembayaran' => $metodePembayaran,
+                    ]);
+                } elseif ($request->transaction_status == 'pending') {
+                    // Jika transaksi pending, ubah status pembayaran menjadi "Pending"
+                    $transaksi->update([
+                        'status_pembayaran' => 'Pending',
+                        'nama_bank' => $namaBank,
+                        'metode_pembayaran' => $metodePembayaran,
+                    ]);
+                } elseif (in_array($request->transaction_status, ['deny', 'expire', 'cancel'])) {
+                    // Jika transaksi ditolak atau gagal, ubah status pembayaran menjadi "Failed"
+                    $transaksi->update([
+                        'status_pembayaran' => 'Failed',
+                        'nama_bank' => $namaBank,
+                        'metode_pembayaran' => $metodePembayaran,
+                    ]);
+                }
+            }
+        }
+
+        // Kembalikan response yang sesuai kepada Midtrans
+        return response()->json(['message' => 'Payment status updated successfully']);
+    }
+
+
+
+
+
+
 
 
 

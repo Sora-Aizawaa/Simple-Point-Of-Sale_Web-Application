@@ -14,6 +14,7 @@ class Kasir extends Model
 
     protected $fillable = [
         'id_pembeli',
+        'order_id',
         'riwayat_transaksi',
         'subtotal_keseluruhan',
         'potongan_harga',
@@ -29,5 +30,10 @@ class Kasir extends Model
     protected $casts = [
         'riwayat_transaksi' => 'array', // Jika Anda menggunakan JSON untuk menyimpan data riwayat transaksi
     ];
+
+    public function pembeli()
+    {
+        return $this->belongsTo(DataPembeli::class, 'id_pembeli', 'id_pembeli');
+    }
 
 }

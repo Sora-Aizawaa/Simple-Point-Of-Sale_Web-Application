@@ -15,6 +15,7 @@ return new class extends Migration
         Schema::create('data_transaksi', function (Blueprint $table) {
             $table->increments('id_transaksi');
             $table->integer('id_pembeli');
+            $table->string('order_id')->unique();
             $table->json('riwayat_transaksi')->nullable();
             $table->decimal('subtotal_keseluruhan', 15, 2)->nullable();
             $table->decimal('potongan_harga', 15, 2)->nullable();
