@@ -9,6 +9,17 @@ This application is designed to:
 
 This lightweight web app is built for fast and easy checkout using both cash and QRIS-based digital payment, without complex item management or transaction history features.
 
+## 📝 Screenshot
+
+![Screenshot (979)](https://github.com/user-attachments/assets/cd51169d-7531-4c26-9de9-14ddd1c2bea0) <br/><br/>
+
+![Screenshot (980)](https://github.com/user-attachments/assets/e2f326c9-f65a-414e-8b9a-5c28e6e1e877) <br/><br/>
+
+![Screenshot (981)](https://github.com/user-attachments/assets/963670fd-9e41-4ec9-a7e4-69ab483dd120) <br/><br/>
+
+![Screenshot (982)](https://github.com/user-attachments/assets/d179c670-a621-4bac-b05b-6852a09cd8d4) <br/><br/>
+
+
 </br>
 
 <p align="left">
